@@ -16,7 +16,7 @@ const CombinedComponent = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navbar />
+      {/* <Navbar /> */}
       <main className="container mx-auto mt-8 px-4">
         {/* Section from HomePage */}
         <motion.div

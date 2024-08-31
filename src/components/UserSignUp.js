@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { FaEnvelope, FaLock, FaUser, FaMapMarkerAlt, FaPhoneAlt, FaImage } from 'react-icons/fa';
+import axios from 'axios';
+import { FaEnvelope, FaLock, FaUser, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa';
+import { v4 as uuidv4 } from 'uuid'; 
 
 const UserSignUp = () => {
   const [formData, setFormData] = useState({
+    uid: uuidv4(),
     username: '',
     email: '',
     password: '',
     confirmPassword: '',
     address: '',
     contact: '',
-    profileImg: null,
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -20,20 +22,6 @@ const UserSignUp = () => {
       ...prevState,
       [name]: value,
     }));
-  };
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prevState) => ({
-          ...prevState,
-          profileImg: reader.result.split(',')[1], // base64 data
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   const validateForm = () => {
@@ -58,24 +46,22 @@ const UserSignUp = () => {
     }
 
     const payload = {
-      username: formData.username,
-      email: formData.email,
-      password: formData.password,
-      address: formData.address,
-      contact: formData.contact,
-      profileImg: formData.profileImg,
+      uid:formData.uid,
+      username: formData.username,  // Matches Java backend `username`
+      email: formData.email,        // Matches Java backend `email`
+      password: formData.password,  // Matches Java backend `password`
+      address: formData.address,    // Matches Java backend `address`
+      contact: formData.contact     // Matches Java backend `contact`
     };
 
     try {
-      const response = await fetch('http://localhost:8888/user/add', {
-        method: 'POST',
+      const response = await axios.post('http://localhost:8888/user/add', payload, {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
       });
 
-      if (response.ok) {
+      if (response.status === 200) { // Check if the status is OK
         setSuccess('User registered successfully!');
         setFormData({
           username: '',
@@ -84,15 +70,17 @@ const UserSignUp = () => {
           confirmPassword: '',
           address: '',
           contact: '',
-          profileImg: null,
         });
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Registration failed. Please check your input and try again.');
+        setError('Registration failed. Please check your input and try again.');
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      setError('Network error. Please check your connection and try again.');
+      if (error.response) {
+        setError(error.response.data.message || 'Registration failed. Please check your input and try again.');
+      } else {
+        setError('Network error. Please check your connection and try again.');
+      }
     }
   };
 
@@ -178,16 +166,6 @@ const UserSignUp = () => {
                 value={formData.contact}
                 onChange={handleChange}
                 required
-              />
-            </div>
-            <div className="relative">
-              <FaImage className="absolute top-3 left-3 text-gray-400" />
-              <input
-                type="file"
-                name="profileImg"
-                accept="image/*"
-                className="pl-10 pr-4 py-2 w-full border rounded-md"
-                onChange={handleImageUpload}
               />
             </div>
             <button

@@ -1,93 +1,92 @@
 import React, { useEffect, useState } from 'react';
 import { FaUser, FaCaretDown } from 'react-icons/fa';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
-const ServiceProviderPage = () => {
+const ServiceProviderPage = ({ activeCategory }) => {
   const [serviceProviders, setServiceProviders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeCategory, setActiveCategory] = useState('Plumber'); // Default active category
+  const [selectedCity, setSelectedCity] = useState('Trivandrum');
+  const [sortOption, setSortOption] = useState('price'); // Default sorting by price
+  const { category } = useParams();
 
-  // Service categories and corresponding API endpoints
   const serviceEndpoints = {
-    Plumber: 'http://localhost:8888/provider/plumbers',
-    Carpenter: 'http://localhost:8888/provider/carpenters',
-    Electrician: 'http://localhost:8888/provider/electricians',
-    Saloon: 'http://localhost:8888/provider/saloons',
-    Tutor: 'http://localhost:8888/provider/tutors',
+    plumber: 'http://localhost:8888/provider/plumbers',
+    carpenter: 'http://localhost:8888/provider/carpenters',
+    electrician: 'http://localhost:8888/provider/electricians',
+    saloon: 'http://localhost:8888/provider/saloons',
+    tutor: 'http://localhost:8888/provider/tutors',
   };
 
-  // Fetch data from the backend based on the selected category
   useEffect(() => {
     const fetchProviders = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        const response = await axios.get(serviceEndpoints[activeCategory]);
-        setServiceProviders(response.data); // Assuming response.data is an array of provider objects
+        const endpoint = serviceEndpoints[category.toLowerCase()] || serviceEndpoints[activeCategory.toLowerCase()];
+        const response = await axios.get(endpoint);
+        // Filter by selected city
+        const filteredProviders = response.data.filter(provider => provider.city.toLowerCase() === selectedCity.toLowerCase());
+        setServiceProviders(filteredProviders);
         setLoading(false);
       } catch (err) {
-        setError(`Failed to fetch service providers for ${activeCategory}`);
+        setError(`Failed to fetch service providers for ${category || activeCategory}`);
         setLoading(false);
       }
     };
 
     fetchProviders();
-  }, [activeCategory]); // Re-fetch data when activeCategory changes
+  }, [category, activeCategory, selectedCity]);
 
-  // Handle category click
-  const handleCategoryClick = (category) => {
-    setActiveCategory(category);
-  };
+  // Sort service providers based on the selected sort option
+  const sortedProviders = [...serviceProviders].sort((a, b) => {
+    if (sortOption === 'price') return a.serviceCost - b.serviceCost;
+    if (sortOption === 'rating') return b.rating - a.rating;
+    if (sortOption === 'experience') return b.experience - a.experience;
+    return 0;
+  });
 
-  // Render loading, error, or data
   if (loading) return <p className="text-center mt-10">Loading...</p>;
   if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      <nav className="bg-white shadow-md p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-6">
-            <h1 className="text-xl font-bold">Quick Fix</h1>
-            <ul className="flex space-x-4">
-              {Object.keys(serviceEndpoints).map((item) => (
-                <li
-                  key={item}
-                  className={`cursor-pointer ${activeCategory === item ? 'text-blue-500 font-semibold' : ''}`}
-                  onClick={() => handleCategoryClick(item)}
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <FaUser className="text-2xl text-gray-600" />
-        </div>
-      </nav>
-
       <div className="container mx-auto mt-8 px-4">
         <div className="flex justify-end space-x-4 mb-6">
           <div className="relative">
-            <select className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-8 cursor-pointer">
-              <option>Sort By :- Price(Low to High)</option>
+            <select
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+              className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-8 cursor-pointer"
+            >
+              <option value="price">Sort By: Price (Low to High)</option>
+              <option value="rating">Sort By: Ratings (High to Low)</option>
+              <option value="experience">Sort By: Experience (High to Low)</option>
             </select>
             <FaCaretDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           </div>
           <div className="relative">
-            <select className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-8 cursor-pointer">
-              <option>City :- Trivandrum</option>
+            <select
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-8 cursor-pointer"
+            >
+              <option value="Trivandrum">City: Trivandrum</option>
+              <option value="Chennai">City: Chennai</option>
+              <option value="Bangalore">City: Bangalore</option>
+              <option value="Hyderabad">City: Hyderabad</option>
             </select>
             <FaCaretDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           </div>
         </div>
 
-        {serviceProviders.length === 0 ? (
-          <p className="text-center text-gray-500">No providers available for {activeCategory}.</p>
+        {sortedProviders.length === 0 ? (
+          <p className="text-center text-gray-500">No providers available for {category || activeCategory} in {selectedCity}.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {serviceProviders.map((provider) => (
+            {sortedProviders.map((provider) => (
               <div key={provider.sid} className="bg-white p-6 rounded-lg shadow-md">
                 <div className="flex items-start mb-4">
                   {provider.profileImg ? (

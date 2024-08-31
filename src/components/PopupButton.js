@@ -1,53 +1,45 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-const PopupButton = () => {
-//   const [isOpen, setIsOpen] = useState(false);
-
-  // Function to toggle the pop-up
-//   const togglePopup = () => {
-//     setIsOpen(!isOpen);
-//   };
-
+const SelectionComponent = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      {/* Trigger Button */}
-      {/* <button
-        onClick={togglePopup}
-        className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
-      >
-        Open Pop Up
-      </button> */}
-
-      {/* Pop-Up Modal */}
-      
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-md shadow-lg text-center">
-            <h2 className="text-xl font-bold mb-4">Let me know!</h2>
-            <div className="flex space-x-4">
-              <button
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                onClick={() => alert('User button clicked')}
-              >
-                User
-              </button>
-              <button
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                onClick={() => alert('Service Provider button clicked')}
-              >
-                Service Provider
-              </button>
-            </div>
-            {/* <button
-              className="mt-4 text-gray-500 hover:text-gray-700"
-              onClick={togglePopup}
-            >
-              Close
-            </button> */}
-          </div>
-        </div>
-      
+    <div style={styles.container}>
+      <h1 style={styles.heading}>Let me know !</h1>
+      <div style={styles.buttonContainer}>
+        <button style={styles.button}>User</button>
+        <button style={styles.button}>Service Provider</button>
+      </div>
     </div>
   );
 };
 
-export default PopupButton;
+const styles = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100vh',
+    backgroundColor: '#fff', // Optional, set the background color if needed
+  },
+  heading: {
+    fontSize: '32px',
+    fontWeight: 'bold',
+    marginBottom: '20px',
+  },
+  buttonContainer: {
+    display: 'flex',
+    gap: '20px',
+  },
+  button: {
+    padding: '15px 30px',
+    fontSize: '18px',
+    fontWeight: 'bold',
+    color: '#fff',
+    backgroundColor: '#007bff',
+    border: 'none',
+    borderRadius: '8px',
+    cursor: 'pointer',
+  },
+};
+
+export default SelectionComponent;

@@ -16,7 +16,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navbar />
+      {/* <Navbar /> */}
       <main className="container mx-auto mt-8 px-4">
         <motion.div
           className="bg-white rounded-lg shadow-lg p-8 flex flex-col md:flex-row items-center"
