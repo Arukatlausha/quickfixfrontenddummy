@@ -1,12 +1,27 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const SelectionComponent = () => {
+  const navigate = useNavigate();
+
+  const handleUserClick = () => {
+    navigate('/signup'); // Navigate to the signup page for users
+  };
+
+  const handleServiceProviderClick = () => {
+    navigate('/register'); // Navigate to the register page for service providers
+  };
+
   return (
     <div style={styles.container}>
-      <h1 style={styles.heading}>Let me know !</h1>
+      <h1 style={styles.heading}>Let me know!</h1>
       <div style={styles.buttonContainer}>
-        <button style={styles.button}>User</button>
-        <button style={styles.button}>Service Provider</button>
+        <button style={styles.button} onClick={handleUserClick}>
+          User
+        </button>
+        <button style={styles.button} onClick={handleServiceProviderClick}>
+          Service Provider
+        </button>
       </div>
     </div>
   );
@@ -19,7 +34,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     height: '100vh',
-    backgroundColor: '#fff', // Optional, set the background color if needed
+    backgroundColor: '#fff',
   },
   heading: {
     fontSize: '32px',

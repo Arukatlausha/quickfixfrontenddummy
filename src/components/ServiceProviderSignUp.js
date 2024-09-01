@@ -1,11 +1,13 @@
 // ServiceProviderSignUp.jsx
 import React, { useState } from 'react';
-import { FaEnvelope, FaLock, FaUser, FaMapMarkerAlt, FaPhoneAlt, FaImage, FaStar, FaBriefcase, FaCity, FaMoneyBill, FaCog, FaClock } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaUser, FaMapMarkerAlt, FaBriefcase, FaCity, FaMoneyBill, FaCog } from 'react-icons/fa';
+import { v4 as uuidv4 } from 'uuid'; 
+import axios from 'axios';
 
 const ServiceProviderSignUp = () => {
   const [formData, setFormData] = useState({
-    sid: '',
-    username: '',
+    sid: uuidv4(), // SID is generated on component load
+    name: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -14,11 +16,12 @@ const ServiceProviderSignUp = () => {
     city: '',
     description: '',
     serviceCost: 0,
-    profileImage: null,
     serviceType: '',
     working: '',
-    workTimings: '',
+    status: 'PENDING', // Default status set as PENDING
   });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,212 +31,218 @@ const ServiceProviderSignUp = () => {
     }));
   };
 
-  const handleImageUpload = (e) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      profileImage: e.target.files[0],
-    }));
+  const validateForm = () => {
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords don't match");
+      return false;
+    }
+    if (formData.password.length < 8) {
+      setError("Password must be at least 8 characters long");
+      return false;
+    }
+    return true;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Here you would typically send the data to your backend
+    setError('');
+    setSuccess('');
+
+    if (!validateForm()) {
+      return;
+    }
+
+    const payload = {
+      sid: formData.sid,
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      rating: formData.rating,
+      experience: formData.experience,
+      city: formData.city,
+      description: formData.description,
+      serviceCost: formData.serviceCost,
+      serviceType: formData.serviceType,
+      working: formData.working,
+      status: formData.status, // Default as 'PENDING'
+    };
+
+    try {
+      const response = await axios.post('http://localhost:8888/provider', payload);
+      console.log('Response:', response);
+
+      if (response.status === 201) {
+        setSuccess('Service provider registered successfully!');
+        setFormData({
+          sid: uuidv4(),
+          name: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+          rating: 0,
+          experience: '',
+          city: '',
+          description: '',
+          serviceCost: 0,
+          serviceType: '',
+          working: '',
+          status: 'PENDING',
+        });
+      } else {
+        setError('Registration failed. Please check your input and try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      if (error.response) {
+        setError(error.response.data.message || 'Registration failed. Please check your input and try again.');
+      } else {
+        setError('Network error. Please check your connection and try again.');
+      }
+    }
   };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Left side with quote and image */}
-      <div className="hidden lg:flex lg:w-1/2 bg-white flex-col justify-center items-center p-12">
-        <div className="max-w-md">
-          <p className="text-2xl mb-4">
-            The only way to <span className="text-blue-500">do great work</span> is to{' '}
-            <span className="text-blue-500">love what you do</span>.
-          </p>
-          <p className="text-gray-600">- Steve Jobs</p>
-        </div>
-        <img 
-          src="3.jpg" 
-          alt="Decorative plant" 
-          className="mt-8 max-w-sm"
-        />
-      </div>
+      <div className="w-full max-w-md m-auto bg-white rounded-lg border border-primaryBorder shadow-default py-10 px-16">
+        <h1 className="text-2xl font-medium text-primary mt-4 mb-12 text-center">
+          Service Provider Sign Up
+        </h1>
 
-      {/* Right side with sign-up form */}
-      <div className="w-full lg:w-1/2 flex justify-center items-center p-8">
-        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-          <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <div className="relative">
-                <FaUser className="absolute top-3 left-3 text-gray-400" />
-                <input
-                  type="text"
-                  name="username"
-                  placeholder="Username"
-                  className="pl-10 pr-4 py-2 w-full border rounded-md"
-                  value={formData.username}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="relative">
-                <FaEnvelope className="absolute top-3 left-3 text-gray-400" />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Your email"
-                  className="pl-10 pr-4 py-2 w-full border rounded-md"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="relative">
-                <FaLock className="absolute top-3 left-3 text-gray-400" />
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Password"
-                  className="pl-10 pr-4 py-2 w-full border rounded-md"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="relative">
-                <FaLock className="absolute top-3 left-3 text-gray-400" />
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="Repeat Password"
-                  className="pl-10 pr-4 py-2 w-full border rounded-md"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="relative">
-                <FaStar className="absolute top-3 left-3 text-gray-400" />
-                <input
-                  type="number"
-                  name="rating"
-                  placeholder="Rating"
-                  className="pl-10 pr-4 py-2 w-full border rounded-md"
-                  value={formData.rating}
-                  onChange={handleChange}
-                  min="0"
-                  max="5"
-                />
-              </div>
-              <div className="relative">
-                <FaBriefcase className="absolute top-3 left-3 text-gray-400" />
-                <input
-                  type="text"
-                  name="experience"
-                  placeholder="Experience"
-                  className="pl-10 pr-4 py-2 w-full border rounded-md"
-                  value={formData.experience}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="relative">
-                <FaCity className="absolute top-3 left-3 text-gray-400" />
-                <input
-                  type="text"
-                  name="city"
-                  placeholder="City"
-                  className="pl-10 pr-4 py-2 w-full border rounded-md"
-                  value={formData.city}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="relative">
-                <FaMapMarkerAlt className="absolute top-3 left-3 text-gray-400" />
-                <input
-                  type="text"
-                  name="description"
-                  placeholder="Description"
-                  className="pl-10 pr-4 py-2 w-full border rounded-md"
-                  value={formData.description}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="relative">
-                <FaMoneyBill className="absolute top-3 left-3 text-gray-400" />
-                <input
-                  type="number"
-                  name="serviceCost"
-                  placeholder="Service Cost"
-                  className="pl-10 pr-4 py-2 w-full border rounded-md"
-                  value={formData.serviceCost}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="relative">
-                <FaCog className="absolute top-3 left-3 text-gray-400" />
-                <input
-                  type="text"
-                  name="serviceType"
-                  placeholder="Service Type"
-                  className="pl-10 pr-4 py-2 w-full border rounded-md"
-                  value={formData.serviceType}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="relative">
-                <FaUser className="absolute top-3 left-3 text-gray-400" />
-                <select
-                  name="working"
-                  className="pl-10 pr-4 py-2 w-full border rounded-md"
-                  value={formData.working}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" disabled>Select Status</option>
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
-              </div>
-              <div className="relative">
-                <FaClock className="absolute top-3 left-3 text-gray-400" />
-                <input
-                  type="text"
-                  name="workTimings"
-                  placeholder="Work Timings"
-                  className="pl-10 pr-4 py-2 w-full border rounded-md"
-                  value={formData.workTimings}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="relative">
-                <FaImage className="absolute top-3 left-3 text-gray-400" />
-                <input
-                  type="file"
-                  name="profileImage"
-                  accept="image/*"
-                  className="pl-10 pr-4 py-2 w-full border rounded-md"
-                  onChange={handleImageUpload}
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
-              >
-                Sign up
-              </button>
+        {error && <p className="text-red-500 text-xs italic mb-4">{error}</p>}
+        {success && <p className="text-green-500 text-xs italic mb-4">{success}</p>}
+
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-4">
+            <div className="relative">
+              <FaUser className="absolute top-3 left-3 text-gray-400" />
+              <input
+                type="text"
+                name="name"
+                placeholder="Full Name"
+                className="pl-10 pr-4 py-2 w-full border rounded-md"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
             </div>
-          </form>
-          <p className="mt-4 text-center text-sm text-gray-600">
-            Already have an account? <a href="#" className="text-blue-500">Log in</a>
-          </p>
-        </div>
+            <div className="relative">
+              <FaEnvelope className="absolute top-3 left-3 text-gray-400" />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                className="pl-10 pr-4 py-2 w-full border rounded-md"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="relative">
+              <FaLock className="absolute top-3 left-3 text-gray-400" />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                className="pl-10 pr-4 py-2 w-full border rounded-md"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="relative">
+              <FaLock className="absolute top-3 left-3 text-gray-400" />
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                className="pl-10 pr-4 py-2 w-full border rounded-md"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="relative">
+              <FaBriefcase className="absolute top-3 left-3 text-gray-400" />
+              <input
+                type="text"
+                name="experience"
+                placeholder="Experience"
+                className="pl-10 pr-4 py-2 w-full border rounded-md"
+                value={formData.experience}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="relative">
+              <FaCity className="absolute top-3 left-3 text-gray-400" />
+              <input
+                type="text"
+                name="city"
+                placeholder="City"
+                className="pl-10 pr-4 py-2 w-full border rounded-md"
+                value={formData.city}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="relative">
+              <FaMapMarkerAlt className="absolute top-3 left-3 text-gray-400" />
+              <input
+                type="text"
+                name="description"
+                placeholder="Description"
+                className="pl-10 pr-4 py-2 w-full border rounded-md"
+                value={formData.description}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="relative">
+              <FaMoneyBill className="absolute top-3 left-3 text-gray-400" />
+              <input
+                type="number"
+                name="serviceCost"
+                placeholder="Service Cost"
+                className="pl-10 pr-4 py-2 w-full border rounded-md"
+                value={formData.serviceCost}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="relative">
+              <FaCog className="absolute top-3 left-3 text-gray-400" />
+              <input
+                type="text"
+                name="serviceType"
+                placeholder="Service Type"
+                className="pl-10 pr-4 py-2 w-full border rounded-md"
+                value={formData.serviceType}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="relative">
+              <FaUser className="absolute top-3 left-3 text-gray-400" />
+              <select
+                name="working"
+                className="pl-10 pr-4 py-2 w-full border rounded-md"
+                value={formData.working}
+                onChange={handleChange}
+                required
+              >
+                <option value="" disabled>Select Working Status</option>
+                <option value="Full-time">Full-time</option>
+                <option value="Part-time">Part-time</option>
+              </select>
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
+            >
+              Sign up
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

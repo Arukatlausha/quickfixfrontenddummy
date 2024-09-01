@@ -46,24 +46,27 @@ const UserSignUp = () => {
     }
 
     const payload = {
-      uid:formData.uid,
-      username: formData.username,  // Matches Java backend `username`
-      email: formData.email,        // Matches Java backend `email`
-      password: formData.password,  // Matches Java backend `password`
-      address: formData.address,    // Matches Java backend `address`
-      contact: formData.contact     // Matches Java backend `contact`
+      uid: formData.uid,
+      username: formData.username,
+      email: formData.email,
+      password: formData.password,
+      address: formData.address,
+      contact: formData.contact
     };
 
     try {
       const response = await axios.post('http://localhost:8888/user/add', payload, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        // headers: {
+        //   'Content-Type': 'application/json',
+        //   'Access-Control-Allow-Origin': '*',
+        // },
       });
+      console.log('Response:', response);
 
-      if (response.status === 200) { // Check if the status is OK
+      if (response.status === 201) {
         setSuccess('User registered successfully!');
         setFormData({
+          uid: uuidv4(),
           username: '',
           email: '',
           password: '',

@@ -10,7 +10,7 @@ const ServicesDashboard = () => {
       <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="flex flex-col md:flex-row p-8">
           <div className="md:w-1/2 pr-8">
-            <img src="/api/placeholder/400/500" alt="Service Provider" className="w-full h-auto" />
+            <img src="2.png" alt="Service Provider" className="w-full h-auto" />
           </div>
           <div className="md:w-1/2 mt-8 md:mt-0">
             <h1 className="text-4xl font-bold mb-4">
