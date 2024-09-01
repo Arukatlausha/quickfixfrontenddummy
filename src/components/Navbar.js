@@ -1,23 +1,62 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FaUserCircle, FaBars, FaTimes, FaHome } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { FaUserCircle, FaBars, FaTimes, FaHome } from "react-icons/fa";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const Navbar = ({ onCategoryClick, activeCategory }) => {
+const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  const categories = ['Plumber', 'Carpenter', 'Electrician', 'Saloon', 'Tutor'];
+  const categories = ["Plumber", "Carpenter", "Electrician", "Saloon", "Tutor"];
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const handleCategoryClick = (category) => {
-    onCategoryClick(category);
+    // onCategoryClick(category);
     setIsMenuOpen(false);
-    navigate(`/service/${category.toLowerCase()}`);
+    navigate(`${category.toLowerCase()}`);
   };
+  const handleLogout = () => {
+    document.cookie =
+      "sessionId=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; SameSite=Strict";
+    navigate("/login");
+    window.location.reload();
+  };
+
+  const getSessionIdFromCookie = () => {
+    const match = document.cookie.match(/sessionId=([^;]+)/);
+    return match ? match[1] : null;
+  };
+
+  useEffect(() => {
+    const checkSessionAndFetchUser = async () => {
+      const sessionId = getSessionIdFromCookie();
+
+      if (!sessionId) {
+        navigate("/login");
+      } else {
+        try {
+          const response = await axios.get("http://localhost:3000/users.json");
+          const users = response.data;
+
+          const user = users.find((u) => u.sessionId === sessionId);
+
+          if (user) {
+            console.log("sesion exists");
+          } else {
+            navigate("/login");
+          }
+        } catch (err) {
+          console.error("Error fetching users:", err);
+        }
+      }
+    };
+
+    checkSessionAndFetchUser();
+  }, [navigate]);
 
   return (
     <nav className="bg-white shadow-md p-4">
@@ -28,9 +67,9 @@ const Navbar = ({ onCategoryClick, activeCategory }) => {
             animate={{ opacity: 1 }}
             className="text-xl font-bold"
           >
-            <Link to="/">Quick Fix</Link>
+            <Link to="">Quick Fix</Link>
           </motion.h1>
-          <Link to="/" className="text-gray-600 hover:text-blue-500">
+          <Link to="" className="text-gray-600 hover:text-blue-500">
             <FaHome size={24} />
           </Link>
         </div>
@@ -63,7 +102,11 @@ const Navbar = ({ onCategoryClick, activeCategory }) => {
         <Link to="/profile">
           <FaUserCircle className="text-2xl text-gray-600" />
         </Link>
+        <button onClick={handleLogout}>Log out</button>
       </div>
+      <main className="content">
+        <Outlet />
+      </main>
 
       {/* Mobile Menu */}
       {isMenuOpen && (

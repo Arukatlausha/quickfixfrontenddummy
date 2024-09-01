@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FaUserCircle, FaBars, FaTimes, FaHome } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { FaUserCircle, FaBars, FaTimes, FaHome } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
 
-const Navbar = ({ onCategoryClick, activeCategory }) => {
+const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const categories = ['orders', 'myprofile'];
+  const categories = ["orders", "myprofile"];
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -34,9 +34,12 @@ const Navbar = ({ onCategoryClick, activeCategory }) => {
           transition={{ delay: 0.2 }}
         >
           {categories.map((item) => (
-            <li key={item} className="cursor-pointer text-gray-600 hover:text-blue-500 transition-colors duration-200">
-              <Link to={`/${item === 'orders' ? 'orders' : 'profile'}`}>
-                {item === 'orders' ? 'Orders' : 'My Profile'}
+            <li
+              key={item}
+              className="cursor-pointer text-gray-600 hover:text-blue-500 transition-colors duration-200"
+            >
+              <Link to={`/${item === "orders" ? "orders" : "profile"}`}>
+                {item === "orders" ? "Orders" : "My Profile"}
               </Link>
             </li>
           ))}
@@ -61,9 +64,12 @@ const Navbar = ({ onCategoryClick, activeCategory }) => {
         >
           <ul className="flex flex-col space-y-2">
             {categories.map((item) => (
-              <li key={item} className="cursor-pointer text-gray-600 hover:text-blue-500 transition-colors duration-200">
-                <Link to={`/${item === 'orders' ? 'orders' : 'profile'}`}>
-                  {item === 'orders' ? 'Orders' : 'My Profile'}
+              <li
+                key={item}
+                className="cursor-pointer text-gray-600 hover:text-blue-500 transition-colors duration-200"
+              >
+                <Link to={`/${item === "orders" ? "orders" : "profile"}`}>
+                  {item === "orders" ? "Orders" : "My Profile"}
                 </Link>
               </li>
             ))}

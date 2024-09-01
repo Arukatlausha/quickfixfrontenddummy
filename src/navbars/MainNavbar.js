@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FaUserCircle, FaBars, FaTimes, FaHome } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { FaUserCircle, FaBars, FaTimes, FaHome } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
 
-const Navbar = ({ onCategoryClick = () => {}, activeCategory }) => {
+const MainNavbar = ({ onCategoryClick = () => {}, activeCategory }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const navigate = useNavigate();
-  const categories = ['login', 'signup'];
+  const categories = ["login", "signup"];
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -17,10 +17,10 @@ const Navbar = ({ onCategoryClick = () => {}, activeCategory }) => {
     onCategoryClick(category);
     setIsMenuOpen(false);
 
-    if (category === 'login') {
-      navigate('/login');
-    } else if (category === 'signup') {
-      navigate('/pop'); // Show the signup popup
+    if (category === "login") {
+      navigate("/login");
+    } else if (category === "signup") {
+      navigate("/pop"); // Show the signup popup
     }
   };
 
@@ -115,4 +115,4 @@ const Navbar = ({ onCategoryClick = () => {}, activeCategory }) => {
   );
 };
 
-export default Navbar;
+export default MainNavbar;

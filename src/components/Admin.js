@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { motion } from 'framer-motion';
-import { FaUser, FaUsers } from 'react-icons/fa'; // Example icons
-import { MdOutlineMenu } from 'react-icons/md'; // Menu icon
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { motion } from "framer-motion";
+import { FaUser, FaUsers } from "react-icons/fa"; // Example icons
+import { MdOutlineMenu } from "react-icons/md"; // Menu icon
+import { useNavigate } from "react-router-dom";
 
 const UserCard = ({ user, onClick }) => (
   <motion.div
@@ -11,9 +11,15 @@ const UserCard = ({ user, onClick }) => (
     className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center cursor-pointer"
     onClick={() => onClick(user)}
   >
-    <img src={`5.png`} alt={user.username} className="w-24 h-24 rounded-full mb-2" />
+    <img
+      src={`5.png`}
+      alt={user.username}
+      className="w-24 h-24 rounded-full mb-2"
+    />
     <h3 className="text-lg font-semibold">{user.username}</h3>
-    <p className="text-sm text-gray-500">{user.workplace || 'Workplace not specified'}</p>
+    <p className="text-sm text-gray-500">
+      {user.workplace || "Workplace not specified"}
+    </p>
     <div className="mt-2 text-center">
       <p className="text-sm truncate w-full">{user.contact}</p>
       <p className="text-sm truncate w-full">{user.email}</p>
@@ -35,28 +41,37 @@ const UserDetailsModal = ({ user, onClose }) => (
       >
         ✕
       </button>
-      <img src={`5.png`} alt={user.username} className="w-32 h-32 rounded-full mb-4 mx-auto" />
+      <img
+        src={`5.png`}
+        alt={user.username}
+        className="w-32 h-32 rounded-full mb-4 mx-auto"
+      />
       <h3 className="text-xl font-semibold text-center">{user.username}</h3>
-      <p className="text-sm text-gray-500 text-center">{user.workplace || 'Workplace not specified'}</p>
+      <p className="text-sm text-gray-500 text-center">
+        {user.workplace || "Workplace not specified"}
+      </p>
       <div className="mt-4 text-center">
         <p className="text-sm">Contact: {user.contact}</p>
         <p className="text-sm">Email: {user.email}</p>
-        <p className="text-sm">Additional Info: {user.additionalInfo || 'No additional info available'}</p>
+        <p className="text-sm">
+          Additional Info:{" "}
+          {user.additionalInfo || "No additional info available"}
+        </p>
       </div>
     </div>
   </motion.div>
 );
 
 const Navigation = () => {
-  const [activeTab, setActiveTab] = useState('users');
+  const [activeTab, setActiveTab] = useState("users");
   const [userData, setUserData] = useState([]);
   const [providerData, setProviderData] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
-    if (activeTab === 'users') {
+    if (activeTab === "users") {
       fetchUserData();
-    } else if (activeTab === 'providers') {
+    } else if (activeTab === "providers") {
       fetchProviderData();
     }
   }, [activeTab]);
@@ -65,19 +80,19 @@ const Navigation = () => {
 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get('http://localhost:8888/user/getall');
+      const response = await axios.get("http://localhost:8888/user/getall");
       setUserData(response.data);
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error("Error fetching user data:", error);
     }
   };
 
   const fetchProviderData = async () => {
     try {
-      const response = await axios.get('http://localhost:8888/provider');
+      const response = await axios.get("http://localhost:8888/provider");
       setProviderData(response.data);
     } catch (error) {
-      console.error('Error fetching provider data:', error);
+      console.error("Error fetching provider data:", error);
     }
   };
 
@@ -88,6 +103,48 @@ const Navigation = () => {
   const handleCloseModal = () => {
     setSelectedUser(null);
   };
+
+  const handleLogout = () => {
+    document.cookie =
+      "sessionId=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; SameSite=Strict";
+    navigate("/login");
+    window.location.reload();
+  };
+
+  const getSessionIdFromCookie = () => {
+    const match = document.cookie.match(/sessionId=([^;]+)/);
+    return match ? match[1] : null;
+  };
+
+  useEffect(() => {
+    const checkSessionAndFetchUser = async () => {
+      const sessionId = getSessionIdFromCookie();
+
+      if (!sessionId) {
+        navigate("/login");
+      } else {
+        try {
+          const response = await axios.get(
+            "http://localhost:3000/adminusers.json"
+          );
+          const users = response.data;
+
+          const user = users.find((u) => u.sessionId === sessionId);
+
+          if (user) {
+            // setUserData(user);
+            console.log("jsji");
+          } else {
+            navigate("/login");
+          }
+        } catch (err) {
+          console.error("Error fetching users:", err);
+        }
+      }
+    };
+
+    checkSessionAndFetchUser();
+  }, [navigate]);
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -100,22 +157,22 @@ const Navigation = () => {
             </div>
             <div className="hidden sm:flex sm:space-x-8">
               <button
-                onClick={() => setActiveTab('users')}
+                onClick={() => setActiveTab("users")}
                 className={`${
-                  activeTab === 'users'
-                    ? 'border-blue-500 text-gray-900'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  activeTab === "users"
+                    ? "border-blue-500 text-gray-900"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
               >
                 <FaUsers className="mr-2" />
                 USERS
               </button>
               <button
-                onClick={() => setActiveTab('providers')}
+                onClick={() => setActiveTab("providers")}
                 className={`${
-                  activeTab === 'providers'
-                    ? 'border-blue-500 text-gray-900'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  activeTab === "providers"
+                    ? "border-blue-500 text-gray-900"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
               >
                 <FaUser className="mr-2" />
@@ -131,8 +188,12 @@ const Navigation = () => {
                 aria-haspopup="true"
               >
                 <span className="sr-only">Open user menu</span>
-                <FaUser className="h-8 w-8 text-gray-500"  onClick={()=>navigate("/profile")}/>
+                <FaUser
+                  className="h-8 w-8 text-gray-500"
+                  onClick={() => navigate("/profile")}
+                />
               </button>
+              <button onClick={handleLogout}>Log out</button>
             </div>
           </div>
         </div>
@@ -143,18 +204,20 @@ const Navigation = () => {
           layout
           className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
         >
-          {activeTab === 'users' &&
+          {activeTab === "users" &&
             userData.map((user, index) => (
               <UserCard key={index} user={user} onClick={handleUserClick} />
             ))}
-          {activeTab === 'providers' &&
+          {activeTab === "providers" &&
             providerData.map((provider, index) => (
               <UserCard key={index} user={provider} onClick={handleUserClick} />
             ))}
         </motion.div>
       </div>
 
-      {selectedUser && <UserDetailsModal user={selectedUser} onClose={handleCloseModal} />}
+      {selectedUser && (
+        <UserDetailsModal user={selectedUser} onClose={handleCloseModal} />
+      )}
     </div>
   );
 };
