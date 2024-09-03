@@ -8,7 +8,7 @@ const ServiceCard = ({ icon: Icon, text, description }) => {
     setActiveCategory(category);
   };
   return (
-    <><Navbar onCategoryClick={handleCategoryClick} activeCategory={activeCategory} /><motion.div
+      <><motion.div
       className="bg-white p-6 rounded-lg shadow-md text-center"
       whileHover={{ y: -5 }}
     >

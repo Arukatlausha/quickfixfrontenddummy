@@ -38,9 +38,9 @@ const Navbar = ({ onCategoryClick }) => {
             animate={{ opacity: 1 }}
             className="text-xl font-bold"
           >
-            <Link to="/home">Quick Fix</Link>
+            <Link to="/dashboard">Quick Fix</Link>
           </motion.h1>
-          <Link to="/home" className="text-gray-600 hover:text-blue-500">
+          <Link to="/dashboard" className="text-gray-600 hover:text-blue-500">
             <FaHome size={24} />
           </Link>
         </div>
