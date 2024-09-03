@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { FaUser, FaUsers } from 'react-icons/fa'; // Example icons
-import { MdOutlineMenu } from 'react-icons/md'; // Menu icon
+import { FaUser, FaUsers } from 'react-icons/fa';
+import { MdOutlineMenu } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
 const UserCard = ({ user, onClick }) => (
@@ -52,6 +52,7 @@ const Navigation = () => {
   const [userData, setUserData] = useState([]);
   const [providerData, setProviderData] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (activeTab === 'users') {
@@ -61,11 +62,9 @@ const Navigation = () => {
     }
   }, [activeTab]);
 
-  const navigate = useNavigate();
-
   const fetchUserData = async () => {
     try {
-      const response = await axios.get('http://localhost:8888/user/getall');
+      const response = await axios.get('http://localhost:8087/user/getall');
       setUserData(response.data);
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -74,7 +73,7 @@ const Navigation = () => {
 
   const fetchProviderData = async () => {
     try {
-      const response = await axios.get('http://localhost:8888/provider');
+      const response = await axios.get('http://localhost:8088/provider');
       setProviderData(response.data);
     } catch (error) {
       console.error('Error fetching provider data:', error);
@@ -87,6 +86,15 @@ const Navigation = () => {
 
   const handleCloseModal = () => {
     setSelectedUser(null);
+  };
+
+  const handleLogout = () => {
+    // Clear cookies
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+    // Redirect to the home page
+    navigate('/');
   };
 
   return (
@@ -122,7 +130,7 @@ const Navigation = () => {
                 SERVICE PROVIDERS
               </button>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center space-x-4">
               <button
                 type="button"
                 className="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -131,7 +139,14 @@ const Navigation = () => {
                 aria-haspopup="true"
               >
                 <span className="sr-only">Open user menu</span>
-                <FaUser className="h-8 w-8 text-gray-500"  onClick={()=>navigate("/profile")}/>
+                <FaUser className="h-8 w-8 text-gray-500" onClick={() => navigate("/profile")} />
+              </button>
+              {/* Logout Button */}
+              <button
+                onClick={handleLogout}
+                className="text-sm font-medium text-gray-700 hover:text-gray-900"
+              >
+                Logout
               </button>
             </div>
           </div>

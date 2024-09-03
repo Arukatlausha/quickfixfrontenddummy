@@ -8,15 +8,20 @@ import ServiceCard from '../../components/ServiceCard'; // Corrected path to Ser
 
 const CombinedComponent = () => {
   const [showToast, setShowToast] = useState(false);
-
+ 
   const handleHireService = () => {
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
+  };
+  const [activeCategory, setActiveCategory] = useState('');
+  const handleCategoryClick = (category) => {
+    setActiveCategory(category);
   };
 
   return (
     <div className="min-h-screen bg-gray-100">
       {/* <Navbar /> */}
+      <Navbar onCategoryClick={handleCategoryClick} activeCategory={activeCategory} />
       <main className="container mx-auto mt-8 px-4">
         {/* Section from HomePage */}
         <motion.div

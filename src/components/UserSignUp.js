@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { FaEnvelope, FaLock, FaUser, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa';
-import { v4 as uuidv4 } from 'uuid'; 
+import { v4 as uuidv4 } from 'uuid';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const UserSignUp = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,8 @@ const UserSignUp = () => {
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,16 +54,11 @@ const UserSignUp = () => {
       email: formData.email,
       password: formData.password,
       address: formData.address,
-      contact: formData.contact
+      contact: formData.contact,
     };
 
     try {
-      const response = await axios.post('http://localhost:8888/user/add', payload, {
-        // headers: {
-        //   'Content-Type': 'application/json',
-        //   'Access-Control-Allow-Origin': '*',
-        // },
-      });
+      const response = await axios.post('http://localhost:8087/user/add', payload);
       console.log('Response:', response);
 
       if (response.status === 201) {
@@ -74,6 +72,8 @@ const UserSignUp = () => {
           address: '',
           contact: '',
         });
+        setTimeout(10)
+        navigate('/'); // Redirect to home page after successful registration
       } else {
         setError('Registration failed. Please check your input and try again.');
       }

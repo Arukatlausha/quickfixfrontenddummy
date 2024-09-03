@@ -7,7 +7,7 @@ const Navbar = ({ onCategoryClick = () => {}, activeCategory }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const navigate = useNavigate();
-  const categories = ['login', 'signup'];
+  const categories = [ 'signup'];
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

@@ -1,8 +1,7 @@
-// ServiceProviderSignUp.jsx
 import React, { useState } from 'react';
 import { FaEnvelope, FaLock, FaUser, FaMapMarkerAlt, FaBriefcase, FaCity, FaMoneyBill, FaCog } from 'react-icons/fa';
-import { v4 as uuidv4 } from 'uuid'; 
-import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
+import { useNavigate } from 'react-router-dom';
 
 const ServiceProviderSignUp = () => {
   const [formData, setFormData] = useState({
@@ -22,6 +21,8 @@ const ServiceProviderSignUp = () => {
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -68,10 +69,15 @@ const ServiceProviderSignUp = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:8888/provider', payload);
-      console.log('Response:', response);
+      const response = await fetch('http://localhost:8088/provider', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
-      if (response.status === 201) {
+      if (response.ok) {
         setSuccess('Service provider registered successfully!');
         setFormData({
           sid: uuidv4(),
@@ -88,16 +94,14 @@ const ServiceProviderSignUp = () => {
           working: '',
           status: 'PENDING',
         });
+        navigate('/page'); // Navigate to /page on successful signup
       } else {
-        setError('Registration failed. Please check your input and try again.');
+        const errorData = await response.json();
+        setError(errorData.message || 'Registration failed. Please check your input and try again.');
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      if (error.response) {
-        setError(error.response.data.message || 'Registration failed. Please check your input and try again.');
-      } else {
-        setError('Network error. Please check your connection and try again.');
-      }
+      setError('Network error. Please check your connection and try again.');
     }
   };
 

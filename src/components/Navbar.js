@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { FaUserCircle, FaBars, FaTimes, FaHome } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 
-const Navbar = ({ onCategoryClick, activeCategory }) => {
+const Navbar = ({ onCategoryClick }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -19,6 +19,16 @@ const Navbar = ({ onCategoryClick, activeCategory }) => {
     navigate(`/service/${category.toLowerCase()}`);
   };
 
+  // Logout function to clear cookies and navigate to the home page
+  const handleLogout = () => {
+    // Clear cookies (example assumes cookies are not HttpOnly and can be cleared via JavaScript)
+    document.cookie.split(';').forEach((cookie) => {
+      const cookieName = cookie.split('=')[0].trim();
+      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+    });
+    navigate('/'); // Redirect to home page after logout
+  };
+
   return (
     <nav className="bg-white shadow-md p-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -28,9 +38,9 @@ const Navbar = ({ onCategoryClick, activeCategory }) => {
             animate={{ opacity: 1 }}
             className="text-xl font-bold"
           >
-            <Link to="/">Quick Fix</Link>
+            <Link to="/home">Quick Fix</Link>
           </motion.h1>
-          <Link to="/" className="text-gray-600 hover:text-blue-500">
+          <Link to="/home" className="text-gray-600 hover:text-blue-500">
             <FaHome size={24} />
           </Link>
         </div>
@@ -60,9 +70,18 @@ const Navbar = ({ onCategoryClick, activeCategory }) => {
           </button>
         </div>
 
-        <Link to="/profile">
-          <FaUserCircle className="text-2xl text-gray-600" />
-        </Link>
+        {/* Profile and Logout */}
+        <div className="flex items-center space-x-4">
+          <Link to="/profile">
+            <FaUserCircle className="text-2xl text-gray-600" />
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="text-gray-600 hover:text-blue-500 transition-colors duration-200"
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
@@ -83,6 +102,14 @@ const Navbar = ({ onCategoryClick, activeCategory }) => {
                 {item}
               </li>
             ))}
+            <li>
+              <button
+                onClick={handleLogout}
+                className="text-gray-600 hover:text-blue-500 transition-colors duration-200"
+              >
+                Logout
+              </button>
+            </li>
           </ul>
         </motion.div>
       )}

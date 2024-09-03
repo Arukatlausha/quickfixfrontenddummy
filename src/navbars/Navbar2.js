@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { FaUserCircle, FaBars, FaTimes, FaHome } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 
-const Navbar = ({ onCategoryClick, activeCategory }) => {
+const Navbar2 = ({ onCategoryClick, activeCategory }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const categories = ['orders', 'myprofile'];
 
@@ -74,4 +74,4 @@ const Navbar = ({ onCategoryClick, activeCategory }) => {
   );
 };
 
-export default Navbar;
+export default Navbar2;
